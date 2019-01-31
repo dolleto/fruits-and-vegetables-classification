@@ -1,7 +1,33 @@
 import os
 import pandas as pd
 import rampwf as rw
+from rampwf.score_types.classifier_base import ClassifierBaseScoreType
 from sklearn.model_selection import StratifiedShuffleSplit
+import numpy as np
+
+class Loss_ratio(ClassifierBaseScoreType):
+    is_lower_the_better = True
+    minimum = 0.0
+    maximum = 1.0
+
+    def __init__(self, name='loss_ratio', precision=2):
+        self.name = name
+        self.precision = precision
+
+    def __call__(self, y_true_label_index, y_pred_label_index):
+        item_prices = np.asarray([2.50, 2.00, 1.50, 6.00, 3.00, 1.50, 3.50, 1.50, 3.00,2.0])
+        real_price = item_prices[y_true_label_index]
+        estimated_price = item_prices[y_pred_label_index]
+        total_price = np.sum(real_price)
+        l = 0
+        for i in range (len(estimated_price)):
+            if estimated_price[i] > real_price[i] :
+                l += 0.2*real_price[i]
+            elif estimated_price[i] < real_price[i] :
+                l+= real_price[i] - estimated_price[i]
+        loss = l/total_price
+        return loss
+    
 
 problem_title =\
     'Fruits and vegetables classification (10 classes)'
@@ -17,8 +43,9 @@ workflow = rw.workflows.SimplifiedImageClassifier(
 score_types = [
     rw.score_types.Accuracy(name='accuracy', precision=3),
     rw.score_types.NegativeLogLikelihood(name='nll', precision=3),
-    rw.score_types.F1Above(name='f170', threshold=0.7, precision=3),
+    Loss_ratio(name='loss_ratio', precision=2)
 ]
+
 
 
 def get_cv(folder_X, y):
