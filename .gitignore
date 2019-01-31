@@ -3,3 +3,5 @@ data/*
 .ipynb_checkpoints/*
 python_flickr_api_master/*
 *.jpg
+/**/__pycache__/*
+*.zip*

@@ -79,12 +79,8 @@ class ImageClassifier(object):
                 Y[:] = 0
                 for i, img_index in enumerate(indices[start:stop]):
                     x, y = img_loader.load(img_index)
-                    print(x.shape)
-                    if (x.shape)==(1163, 1600, 3): #(1536, 2048, 3):
-                        plt.imshow(x)
-                     # TODO TEMP
-                    if len(x.shape)!=3 or x.shape[2]!=3 or x.shape[1]==1200:
-                        print('passed')
+                    if len(x.shape)!=3 or x.shape[2]!=3:
+                        print('Image passed')
                         Y[i, 0] = 1
                         continue
                     x = self._transform(x)
@@ -134,11 +130,11 @@ class ImageClassifier(object):
         )
         self.model.fit_generator(
             gen_train,
-            steps_per_epoch=get_nb_minibatches(nb_train, self.batch_size),
+            steps_per_epoch=get_nb_minibatches(nb_valid, self.batch_size),
             epochs=1,
             max_queue_size=16,
             workers=1,
-            use_multiprocessing=True,
+            use_multiprocessing=False,
             validation_data=gen_valid,
             validation_steps=get_nb_minibatches(nb_valid, self.batch_size),
             verbose=1
@@ -152,6 +148,6 @@ class ImageClassifier(object):
             steps=get_nb_minibatches(nb_test, self.batch_size),
             max_queue_size=16,
             workers=1,
-            use_multiprocessing=True,
+            use_multiprocessing=False,
             verbose=0
         )
