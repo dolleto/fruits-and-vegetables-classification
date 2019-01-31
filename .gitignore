@@ -1,5 +1,5 @@
 env_datacamp/*
-dataset_v1/*
+data/*
 .ipynb_checkpoints/*
 python_flickr_api_master/*
 *.jpg
